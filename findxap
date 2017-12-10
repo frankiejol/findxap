@@ -21,10 +21,23 @@ done
 
 #######################################################################
 
+function search_windows_desktop() {
+    for wid in `wmctrl -lp | grep $prog | awk '{ print $1 ":" $3 }' `; do
+        echo $wid
+        pid=$(echo $wid | cut -d : -f 2)
+        window=$(echo $wid | cut -d : -f 1)
+        mine=$(ps -p $pid -o pid,user | grep $USER)
+        if [ -n "$mine" ]; then
+            WINDOWS="$WINDOWS $window"
+        fi
+    done
+}
+
 function search_windows() {
     search_windows_desktop
     search_windows_pid
 }
+
 #######################################################################
 
 search_windows
