@@ -33,6 +33,14 @@ function search_windows_desktop() {
     done
 }
 
+function search_windows_pid() {
+    pids=$(ps -C $prog -o pid,user | grep $USER | cut -d \  -f 1)
+    if [ -n "$pids" ]; then
+        windows_pid=$(wmctrl -lp | grep -E "$pids" | cut -d \  -f 1)
+        WINDOWS="$WINDOWS $windows_pid"
+    fi
+}
+
 function search_windows() {
     search_windows_desktop
     search_windows_pid
