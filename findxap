@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# invocation
+# findxap <desktop> <prog> <prog args>
+
+if [ $# -lt 2 ]; then
+    echo "invocation: findxap <desktop> <prog> <prog args>"
+    exit 1
+fi
+
+desk=$1
+prog=$2
+args=""
+shift
+shift
+
+while (( "$#" )); do
+    args="$args ""$1"
+    shift
+done
+
+#######################################################################
+
+function search_windows() {
+    search_windows_desktop
+    search_windows_pid
+}
+#######################################################################
+
+search_windows
+if [ -z "$WINDOWS" ]; then
+    echo "launching $prog $args"
+    $prog $args &
+    sleep 1
+    search_windows
+fi
+#echo "Found $prog at $WINDOWS"
+
+for w in $WINDOWS; do
+    wmctrl -i -r $w -t $desk
+done
+
+wmctrl -s $desk
+
+exit 0
