@@ -59,8 +59,7 @@ fi
 
 for w in $WINDOWS; do
     wmctrl -i -r $w -t $desk
+    wmctrl -a `wmctrl -l | grep $w | cut -d \  -f 5-`
 done
-
-wmctrl -s $desk
 
 exit 0
