@@ -1,17 +1,29 @@
 #!/bin/bash
 
 # invocation
-# findxap <desktop> <prog> <prog args>
+# findxap [-d <desktop>] [-n] <prog> <prog args>
 
-if [ $# -lt 2 ]; then
-    echo "invocation: findxap <desktop> <prog> <prog args>"
-    exit 1
-fi
 
-desk=$1
-prog=$2
-args=""
-shift
+DESKTOP=0
+FOLLOW=1
+
+while getopts "d:n" opt; do
+  case $opt in
+    d)
+        DESKTOP=$OPTARG
+      ;;
+    n)
+        FOLLOW=""
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))
+
+prog=$1
 shift
 
 while (( "$#" )); do
@@ -19,11 +31,17 @@ while (( "$#" )); do
     shift
 done
 
+if [ -z "$prog" ]; then
+    echo "invocation: findxap [-d <desktop>] [-n] <prog> <prog args>"
+    exit 1
+fi
+
+#echo "sending $prog args $args to desktop=$DESKTOP follow=$FOLLOW"
+
 #######################################################################
 
 function search_windows_desktop() {
     for wid in `wmctrl -lp | grep $prog | awk '{ print $1 ":" $3 }' `; do
-        echo $wid
         pid=$(echo $wid | cut -d : -f 2)
         window=$(echo $wid | cut -d : -f 1)
         mine=$(ps -p $pid -o pid,user | grep $USER)
@@ -58,8 +76,10 @@ fi
 #echo "Found $prog at $WINDOWS"
 
 for w in $WINDOWS; do
-    wmctrl -i -r $w -t $desk
-    wmctrl -a `wmctrl -l | grep $w | cut -d \  -f 5-`
+    wmctrl -i -r $w -t $DESKTOP
+    if [ -n "$FOLLOW" ]; then
+        wmctrl -a `wmctrl -l | grep $w | cut -d \  -f 5-`
+    fi
 done
 
 exit 0
