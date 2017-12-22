@@ -44,6 +44,20 @@ findxap -d desktop -n program argument1 argument2 ...
 - -d X : Desktop number. Desktop where the program is sent
 - -n : Don't go to the desktop (optional, default = yes )
 
+Examples:
+
+Find application audacity
+
+`$ findxap audacity`
+
+Send firefox to desktop 1
+
+`$ findxap -d 1 firefox`
+
+Send thunderbird to desktop 3 but don't follow it
+
+`$ findxap -d 3 -n thunderbird`
+
 ### Hotkeys
 
 You can define hotkeys so the applications are sent to the desired virtual desktop.
