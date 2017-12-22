@@ -37,6 +37,27 @@ sudo make`
 
 ## Usage
 
+### Command
+
+findxap -d desktop -n program argument1 argument2 ...
+
+- -d X : Desktop number. Desktop where the program is sent
+- -n : Don't go to the desktop (optional, default = yes )
+
+Examples:
+
+Find application audacity
+
+`$ findxap audacity`
+
+Send firefox to desktop 1
+
+`$ findxap -d 1 firefox`
+
+Send thunderbird to desktop 3 but don't follow it
+
+`$ findxap -d 3 -n thunderbird`
+
 ### Hotkeys
 
 You can define hotkeys so the applications are sent to the desired virtual desktop.
@@ -53,12 +74,12 @@ custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybin
 
 [settings-daemon/plugins/media-keys/custom-keybindings/custom1]
 binding='<Super>u'
-command='findxap 2 thunderbird'
+command='findxap -d 2 -n thunderbird'
 name='thunderbird'
 
 [settings-daemon/plugins/media-keys/custom-keybindings/custom0]
 binding='<Super>f'
-command='findxap 1 firefox'
+command='findxap -d 1 firefox'
 name='firefox'
 
 EOC
