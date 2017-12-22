@@ -4,7 +4,7 @@
 # findxap [-d <desktop>] [-n] <prog> <prog args>
 
 
-DESKTOP=0
+DESKTOP=`wmctrl -d | grep '*' | awk '{ print $1 }'`
 FOLLOW=1
 
 while getopts "d:n" opt; do
