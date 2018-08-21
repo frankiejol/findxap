@@ -55,7 +55,7 @@ function search_windows_desktop() {
 }
 
 function search_windows_pid() {
-    pids=$(ps -C $prog -o pid,user | grep $USER | cut -d \  -f 1)
+    pids=$(ps -C $prog -o pid,user | grep $USER | sed -e 's/^ //' | cut -d \  -f 1)
     if [ -n "$pids" ]; then
         windows_pid=$(wmctrl -lp | grep -E "$pids" | cut -d \  -f 1)
         WINDOWS="$WINDOWS $windows_pid"
