@@ -4,11 +4,14 @@
 # findxap [-d <desktop>] [-n] <prog> <prog args>
 
 E_REMOTE=`which enlightenment_remote`
-DESKTOP=`wmctrl -d | grep '*' | awk '{ print $1 }'`
+DESKTOP=`$E_REMOTE '{ print $2 }'`
 FOLLOW=1
 
-while getopts "d:nh" opt; do
+while getopts "d:nc:nh" opt; do
   case $opt in
+    c)
+        CLASS=$OPTARG
+        ;;
     d)
         DESKTOP=$OPTARG
       ;;
@@ -35,13 +38,34 @@ while (( "$#" )); do
 done
 
 if [ -z "$prog" -o -n "$HELP" ]; then
-    echo "invocation: findxap [-d <desktop>] [-n] <prog> <prog args>"
+    echo "invocation: findxap [-d <desktop>] [-n] -c class <prog> <prog args>"
     exit 1
+fi
+
+if [ -z "$CLASS" ]; then
+    CLASS=$prog
 fi
 
 #echo "sending $prog args $args to desktop=$DESKTOP follow=$FOLLOW"
 
 #######################################################################
+
+function search_windows_by_class() {
+    shopt -s nocasematch
+    for line in `wmctrl -xlp | awk '{ print $1 ":" $4 }' `; do
+        id=$(echo $line | cut -d : -f 1)
+        curr=$(echo $line | cut -d : -f 2)
+        if [[ $curr =~ $CLASS ]]; then
+            enlightenment_remote -window-focus $id
+            found=1
+        fi
+    done
+
+    if [ -n "$found" ]; then
+        exit
+    fi
+
+}
 
 function search_windows_desktop() {
     for wid in `wmctrl -lp | grep $prog | awk '{ print $1 ":" $3 }' `; do
@@ -64,6 +88,7 @@ function search_windows_pid() {
 }
 
 function search_windows() {
+    search_windows_by_class
     search_windows_desktop
     search_windows_pid
 }
